@@ -7,7 +7,7 @@ public class Explosion : MonoBehaviour
     
     void Start()
     {
-        Destroy(this.gameObject, 1.0f);
+        Destroy(this.gameObject, 1.5f);
     }
 
 }

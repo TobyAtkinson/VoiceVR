@@ -59,14 +59,26 @@ public class VoiceMovement : MonoBehaviour
     private float upCommand = 1.0f;
     public Text[] upTexts;
 
+    private float downCommand = 1.0f;
+    public Text[] downTexts;
+
+    private float fireCommand = 1.0f;
+    public Text[] fireTexts;
+
+    public int tanksLeft = 0;
+
+    public int wave = 0;
+
+    public GameObject[] tankGroups;
+
 
     private void Start()
     {
         whereToBe = artilleryGroup.transform.position;
         //actions.Add("right", MoveRight);
         //actions.Add("left", MoveLeft);
-        actions.Add("power up", PowerUp);
-        actions.Add("power down", PowerDown);
+        //actions.Add("power up", PowerUp);
+        //actions.Add("power down", PowerDown);
        // actions.Add("fire", CannonFire);
         //actions.Add("spawn wave", SpawnWave);
 
@@ -89,21 +101,48 @@ public class VoiceMovement : MonoBehaviour
         actions.Add("johnnie", Johnnie);
 
         //down
-        actions.Add("down", Up);
+        actions.Add("down", Down);
         actions.Add("king", King);
         actions.Add("london", London);
         actions.Add("monkey", Monkey);
 
         //fire
-        actions.Add("Fire", Fire);
-        actions.Add("Nuts", Nuts);
-        actions.Add("Orange", Orange);
-        actions.Add("Robert", Robert);
+        actions.Add("fire", Fire);
+        actions.Add("nuts", Nuts);
+        actions.Add("orange", Orange);
+        actions.Add("robert", Robert);
 
         keywordRecognizer = new KeywordRecognizer(actions.Keys.ToArray());
         keywordRecognizer.OnPhraseRecognized += RecognizedSpeech;
         keywordRecognizer.Start();
     }
+
+
+    public void TankDown()
+    {
+        tanksLeft--;
+        if(tanksLeft == 0)
+        {
+            if(wave == 1)
+            {
+                // spawn wave 2
+                tanksLeft = 3;
+                wave = 2;
+                tankGroups[1].SetActive(false);
+                tankGroups[2].SetActive(true);
+                menuTexts[5].text = "Wave 2 \n How to make enemy retreat: Ignore red tanks, Take down 3 Faster Yellow Tanks \n You will lose if:  2 or more tanks reach front line";
+            }
+            else if (wave == 2)
+            {
+                wave = 3;
+                // spawn wave 2
+                //tankGroups[2].SetActive(true);
+                tankGroups[2].SetActive(false);
+                menuTexts[5].text = "Wave 3 \n How to make enemy retreat: something, \n You will lose if: something";
+            }
+        }
+    }
+
 
     //left 
     IEnumerator LeftDelay(int numb)
@@ -136,7 +175,7 @@ public class VoiceMovement : MonoBehaviour
             leftTexts[3].color = new Color32(250, 109, 53, 255);
             LeftCommand = 1.0f;
         }
-        CannonFire();
+        MoveLeft();
     }
     private void Left()
     {
@@ -166,7 +205,7 @@ public class VoiceMovement : MonoBehaviour
             menuTexts[0].color = Color.green;
             menuSteps = 1;
         }
-        else
+        else if(menuSteps == 5)
         {
             if(LeftCommand == 1.0f)
             {
@@ -187,7 +226,7 @@ public class VoiceMovement : MonoBehaviour
             menuTexts[1].color = Color.green;
             StartCoroutine(Delay1());
         }
-        else
+        else if (menuSteps == 5)
         {
             if (LeftCommand == 1.1f)
             {
@@ -208,7 +247,7 @@ public class VoiceMovement : MonoBehaviour
             menuTexts[2].color = Color.green;
             menuSteps = 3;
         }
-        else
+        else if (menuSteps == 5)
         {
             if (LeftCommand == 2.0f)
             {
@@ -254,7 +293,7 @@ public class VoiceMovement : MonoBehaviour
             rightTexts[3].color = new Color32(250, 109, 53, 255);
             rightCommand = 1.0f;
         }
-        CannonFire();
+        MoveRight();
     }
     private void Right()
     {
@@ -284,7 +323,7 @@ public class VoiceMovement : MonoBehaviour
             menuTexts[3].color = Color.green;
             menuSteps = 4;
         }
-        else
+        else if (menuSteps == 5)
         {
             if (rightCommand == 1.0f)
             {
@@ -318,7 +357,7 @@ public class VoiceMovement : MonoBehaviour
             menuTexts[4].color = Color.green;
             StartCoroutine(Delay2());
         }
-        else
+        else if (menuSteps == 5)
         {
             if (rightCommand == 2.0f)
             {
@@ -364,7 +403,7 @@ public class VoiceMovement : MonoBehaviour
             upTexts[3].color = new Color32(250, 109, 53, 255);
             upCommand = 1.0f;
         }
-        CannonFire();
+        PowerUp();
     }
     private void Up()
     {
@@ -400,7 +439,6 @@ public class VoiceMovement : MonoBehaviour
             upTexts[2].color = Color.green;
         }
     }
-
     private void Ink()
     {
         if (upCommand == 1.1f)
@@ -430,39 +468,191 @@ public class VoiceMovement : MonoBehaviour
     }
 
     //down
+    IEnumerator DownDelay(int numb)
+    {
+        yield return new WaitForSeconds(0.5f);
+        if (numb == 1)
+        {
+            downTexts[1].color = new Color32(250, 109, 53, 255);
+            downTexts[1].text = "Monkey";
+            downTexts[2].color = new Color32(250, 109, 53, 255);
+            downTexts[2].text = "King";
+            downTexts[3].color = new Color32(250, 109, 53, 255);
+            downCommand = 2.0f;
+        }
+        else if (numb == 2)
+        {
+            downTexts[1].color = new Color32(250, 109, 53, 255);
+            downTexts[1].text = "London";
+            downTexts[2].color = new Color32(250, 109, 53, 255);
+            downTexts[2].text = "Monkey";
+            downTexts[3].color = new Color32(250, 109, 53, 255);
+            downCommand = 3.0f;
+        }
+        else if (numb == 3)
+        {
+            downTexts[1].color = new Color32(250, 109, 53, 255);
+            downTexts[1].text = "King";
+            downTexts[2].color = new Color32(250, 109, 53, 255);
+            downTexts[2].text = "London";
+            downTexts[3].color = new Color32(250, 109, 53, 255);
+            downCommand = 1.0f;
+        }
+        PowerDown();
+    }
     private void Down()
     {
-
+        if (downCommand == 1.2f)
+        {
+            downCommand = 1.3f;
+            downTexts[3].color = Color.green;
+            StartCoroutine(DownDelay(1));
+        }
+        if (downCommand == 2.2f)
+        {
+            downCommand = 2.3f;
+            downTexts[3].color = Color.green;
+            StartCoroutine(DownDelay(2));
+        }
+        if (downCommand == 3.2f)
+        {
+            downCommand = 3.3f;
+            downTexts[3].color = Color.green;
+            StartCoroutine(DownDelay(3));
+        }
     }
     private void King()
     {
-
+        if (downCommand == 1.0f)
+        {
+            downCommand = 1.1f;
+            downTexts[1].color = Color.green;
+        }
+        if (downCommand == 2.1f)
+        {
+            downCommand = 2.2f;
+            downTexts[2].color = Color.green;
+        }
     }
     private void London()
     {
-
+        if (downCommand == 1.1f)
+        {
+            downCommand = 1.2f;
+            downTexts[2].color = Color.green;
+        }
+        if (downCommand == 3.0f)
+        {
+            downCommand = 3.1f;
+            downTexts[1].color = Color.green;
+        }
     }
     private void Monkey()
     {
-
+        if (downCommand == 2.0f)
+        {
+            downCommand = 2.1f;
+            downTexts[1].color = Color.green;
+        }
+        if (downCommand == 3.1f)
+        {
+            downCommand = 3.2f;
+            downTexts[2].color = Color.green;
+        }
     }
 
     // fire
+    IEnumerator FireDelay(int numb)
+    {
+        yield return new WaitForSeconds(0.5f);
+        if (numb == 1)
+        {
+            fireTexts[1].color = new Color32(250, 109, 53, 255);
+            fireTexts[1].text = "Robert";
+            fireTexts[2].color = new Color32(250, 109, 53, 255);
+            fireTexts[2].text = "Nuts";
+            fireTexts[3].color = new Color32(250, 109, 53, 255);
+            fireCommand = 2.0f;
+        }
+        else if (numb == 2)
+        {
+            fireTexts[1].color = new Color32(250, 109, 53, 255);
+            fireTexts[1].text = "Orange";
+            fireTexts[2].color = new Color32(250, 109, 53, 255);
+            fireTexts[2].text = "Robert";
+            fireTexts[3].color = new Color32(250, 109, 53, 255);
+            fireCommand = 3.0f;
+        }
+        else if (numb == 3)
+        {
+            fireTexts[1].color = new Color32(250, 109, 53, 255);
+            fireTexts[1].text = "Nuts";
+            fireTexts[2].color = new Color32(250, 109, 53, 255);
+            fireTexts[2].text = "Orange";
+            fireTexts[3].color = new Color32(250, 109, 53, 255);
+            fireCommand = 1.0f;
+        }
+        CannonFire();
+    }
     private void Fire()
     {
-
+        if (fireCommand == 1.2f)
+        {
+            fireCommand = 1.3f;
+            fireTexts[3].color = Color.green;
+            StartCoroutine(FireDelay(1));
+        }
+        if (fireCommand == 2.2f)
+        {
+            fireCommand = 2.3f;
+            fireTexts[3].color = Color.green;
+            StartCoroutine(FireDelay(2));
+        }
+        if (fireCommand == 3.2f)
+        {
+            fireCommand = 3.3f;
+            fireTexts[3].color = Color.green;
+            StartCoroutine(FireDelay(3));
+        }
     }
     private void Nuts()
     {
-
+        if (fireCommand == 1.0f)
+        {
+            fireCommand = 1.1f;
+            fireTexts[1].color = Color.green;
+        }
+        if (fireCommand == 2.1f)
+        {
+            fireCommand = 2.2f;
+            fireTexts[2].color = Color.green;
+        }
     }
     private void Orange()
     {
-
+        if (fireCommand == 1.1f)
+        {
+            fireCommand = 1.2f;
+            fireTexts[2].color = Color.green;
+        }
+        if (fireCommand == 3.0f)
+        {
+            fireCommand = 3.1f;
+            fireTexts[1].color = Color.green;
+        }
     }
     private void Robert()
     {
-
+        if (fireCommand == 2.0f)
+        {
+            fireCommand = 2.1f;
+            fireTexts[1].color = Color.green;
+        }
+        if (fireCommand == 3.1f)
+        {
+            fireCommand = 3.2f;
+            fireTexts[2].color = Color.green;
+        }
     }
 
 
@@ -471,21 +661,35 @@ public class VoiceMovement : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
         menuSteps = 2;
-        menuObjects[0].SetActive(false);
-        menuObjects[1].SetActive(false);
         menuObjects[2].SetActive(true);
         menuObjects[3].SetActive(true);
+        menuObjects[0].SetActive(false);
+        menuObjects[1].SetActive(false);
+        
     }
+
     IEnumerator Delay2()
     {
         yield return new WaitForSeconds(0.5f);
         menuSteps = 5;
-        menuObjects[2].SetActive(false);
+        //menuObjects[4].SetActive(true);
+        menuObjects[5].SetActive(true);
+        //menuObjects[2].transform.position = new Vector3(139.9f, 2.303f, 839.748f);
         menuObjects[3].SetActive(false);
-        menuObjects[4].SetActive(true);
+
 
         // Game Start
+
+        // ambience
+        tankGroups[0].SetActive(true);
+
+        // tanks 1
+        tankGroups[1].SetActive(true);
+
+        tanksLeft = 3;
+        wave = 1;
     }
+
 
     private void RecognizedSpeech(PhraseRecognizedEventArgs speech)
     {
@@ -498,10 +702,7 @@ public class VoiceMovement : MonoBehaviour
         artilleryGroup.transform.position = Vector3.Lerp(artilleryGroup.transform.position, whereToBe, 0.6f * Time.deltaTime);
     }
 
-    private void SpawnWave()
-    {
-        wave2.SetActive(true);
-    }
+
 
     private void MoveRight()
     {

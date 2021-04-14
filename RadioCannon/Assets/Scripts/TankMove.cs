@@ -13,6 +13,8 @@ public class TankMove : MonoBehaviour
     [SerializeField]
     private GameObject destroyedTank;
 
+    public bool target;
+
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -34,6 +36,11 @@ public class TankMove : MonoBehaviour
         if (other.gameObject.CompareTag("Explosion"))
         {
             Instantiate(destroyedTank, this.gameObject.transform.position, Quaternion.identity);
+            if(target == true)
+            {
+                this.transform.root.GetComponent<VoiceMovement>().TankDown();
+            }
+            
             Destroy(this.gameObject);
         }
     }

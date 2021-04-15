@@ -36,12 +36,17 @@ public class TankMove : MonoBehaviour
         if (other.gameObject.CompareTag("Explosion"))
         {
             Instantiate(destroyedTank, this.gameObject.transform.position, Quaternion.identity);
-            if(target == true)
+            if (target == true)
             {
                 this.transform.root.GetComponent<VoiceMovement>().TankDown();
             }
-            
+
             Destroy(this.gameObject);
         }
+        if (other.gameObject.CompareTag("Line"))
+        {
+            this.transform.root.GetComponent<VoiceMovement>().TankReachedLine();
+        }
     }
+
 }

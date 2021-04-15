@@ -71,6 +71,7 @@ public class VoiceMovement : MonoBehaviour
 
     public GameObject[] tankGroups;
 
+    public int lives = 2;
 
     private void Start()
     {
@@ -117,6 +118,18 @@ public class VoiceMovement : MonoBehaviour
         keywordRecognizer.Start();
     }
 
+    public void TankReachedLine()
+    {
+        if(lives == 2)
+        {
+            lives = 1;
+            menuTexts[6].text = "A tank has reached the front line! If you let another through you'll lose!";
+        }
+        else if(lives == 1)
+        {
+            menuTexts[6].text = "Two tanks made it through! You've failed.";
+        }
+    }
 
     public void TankDown()
     {
@@ -126,29 +139,93 @@ public class VoiceMovement : MonoBehaviour
             if(wave == 1)
             {
                 // spawn wave 2
-                tanksLeft = 3;
-                wave = 2;
-                tankGroups[1].SetActive(false);
-                tankGroups[2].SetActive(true);
-                menuTexts[5].text = "Wave 2 \n How to make enemy retreat: Ignore red tanks, Take down 3 Faster Yellow Tanks \n You will lose if:  2 or more tanks reach front line";
+                StartCoroutine(Wave2Delay());
             }
             else if (wave == 2)
             {
-                wave = 3;
-                // spawn wave 2
-                //tankGroups[2].SetActive(true);
-                tankGroups[2].SetActive(false);
-                menuTexts[5].text = "Wave 3 \n How to make enemy retreat: something, \n You will lose if: something";
+                StartCoroutine(Wave3Delay());
+            }
+            else if (wave == 3)
+            {
+                StartCoroutine(Wave4Delay());
+            }
+            else if (wave == 4)
+            {
+                menuTexts[6].text = "";
+                lives = 2;
+                wave = 5;
+                // end
+                tankGroups[4].SetActive(false);
+                menuTexts[5].text = "Well done commanders you've destroyed all the tanks!";
             }
         }
     }
 
+    IEnumerator Wave4Delay()
+    {
+        tankGroups[3].SetActive(false);
+        menuTexts[6].text = "";
+        menuTexts[5].text = "Wave 4 Final Wave";
+        lives = 2;
+        wave = 4;
+        tanksLeft = 7;
+        yield return new WaitForSeconds(5f);
 
+        tankGroups[4].SetActive(true);
+        menuTexts[5].text = "Wave 4 Final Wave \n How to make enemy retreat: If there are an odd number of red tanks destroy the yellow tanks,\n if not destroy the green tanks \n You will lose if: 2 or more tanks reach front line ";
+    }
+
+    IEnumerator Wave3Delay()
+    {
+        menuTexts[6].text = "";
+        lives = 2;
+        wave = 3;
+        tanksLeft = 5;
+        tankGroups[2].SetActive(false);
+        menuTexts[5].text = "Wave 3";
+        yield return new WaitForSeconds(5f);
+
+        tankGroups[3].SetActive(true);
+        menuTexts[5].text = "Wave 3 \n How to make enemy retreat: Kill the tank color which has the most tanks,\n then the others will retreat \n You will lose if: 2 or more tanks reach front line";
+    }
+
+    IEnumerator Wave2Delay()
+    {
+        menuTexts[6].text = "";
+        lives = 2;
+        tanksLeft = 3;
+        wave = 2;
+        tankGroups[1].SetActive(false);
+        menuTexts[5].text = "Wave 2";
+        yield return new WaitForSeconds(5f);
+
+
+        tankGroups[2].SetActive(true);
+        menuTexts[5].text = "Wave 2 \n How to make enemy retreat: Ignore red tanks,\n Take down 3 Faster Yellow Tanks to make the others retreat \n You will lose if:  2 or more tanks reach front line";
+
+
+    }
+    IEnumerator WaveDelay()
+    {
+        tankGroups[0].SetActive(true);
+        yield return new WaitForSeconds(8f);
+        // Game Start
+
+        // ambience
+        
+
+        // tanks 1
+        tankGroups[1].SetActive(true);
+
+        tanksLeft = 3;
+        wave = 1;
+
+    }
     //left 
     IEnumerator LeftDelay(int numb)
     {
         yield return new WaitForSeconds(0.5f);
-        if(numb == 1)
+        if (numb == 1)
         {
             leftTexts[1].color = new Color32(250, 109, 53, 255);
             leftTexts[1].text = "Charlie";
@@ -157,7 +234,7 @@ public class VoiceMovement : MonoBehaviour
             leftTexts[3].color = new Color32(250, 109, 53, 255);
             LeftCommand = 2.0f;
         }
-        else if(numb == 2)
+        else if (numb == 2)
         {
             leftTexts[1].color = new Color32(250, 109, 53, 255);
             leftTexts[1].text = "Butter";
@@ -677,17 +754,8 @@ public class VoiceMovement : MonoBehaviour
         //menuObjects[2].transform.position = new Vector3(139.9f, 2.303f, 839.748f);
         menuObjects[3].SetActive(false);
 
-
-        // Game Start
-
-        // ambience
-        tankGroups[0].SetActive(true);
-
-        // tanks 1
-        tankGroups[1].SetActive(true);
-
-        tanksLeft = 3;
-        wave = 1;
+        StartCoroutine(WaveDelay());
+       
     }
 
 
